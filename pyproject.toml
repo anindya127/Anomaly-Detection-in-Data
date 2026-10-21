@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "anomaly-detection"
+version = "1.0.0"
+description = "Autoencoder anomaly detection benchmarked against PCA and Isolation Forest, with leak-free evaluation."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Anindya Mozumder" }]
+dependencies = [
+    "numpy>=1.26",
+    "pandas>=2.0",
+    "scikit-learn>=1.4",
+    "matplotlib>=3.8",
+]
+
+[project.optional-dependencies]
+tf = ["tensorflow-cpu>=2.16"]
+dev = ["pytest>=8"]
+
+[project.scripts]
+anomaly-detection = "anomaly_detection.cli:main"
+
+[tool.setuptools]
+packages = ["anomaly_detection"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
