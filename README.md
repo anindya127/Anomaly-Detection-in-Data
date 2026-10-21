@@ -112,36 +112,6 @@ results/         measured results (JSON + Markdown)
 docs/            figures
 ```
 
-## What changed from the original version
-
-The first version of this repository was a single script. Its README quoted
-`Accuracy: 0.95`, `True anomalies detected: 95/100`, `False positives: 5/900`. **Those numbers cannot be
-produced by the code**: with the script's own split the test set has 16 anomalies and 204 normal rows, not 100
-and 900. Running the original script on my machine printed:
-
-```
-Accuracy: 0.98
-True anomalies detected: 11/16
-False positives: 0/204
-```
-
-(The script seeds NumPy but not TensorFlow, so the exact counts can differ slightly between runs.)
-
-The 0.98 is misleading. The script flags the top 5% of test errors by construction (the threshold is the 95th
-percentile of the *test* errors), so it can flag at most 11 of 220 rows; it caught 11 of 16 anomalies (69%
-recall), and accuracy is inflated by the 93% normal class. The rewrite fixes these problems:
-
-1. The autoencoder was trained on data that contained anomalies; it now trains on normal data only.
-2. The threshold came from test-set errors (leakage); it is now chosen on a separate validation set.
-3. The output layer was `sigmoid` (range 0-1) while inputs were standardised and go negative; it is now linear.
-4. Accuracy on an imbalanced problem hides failures; the benchmark now reports ROC-AUC, PR-AUC, precision,
-   recall and F1.
-5. There were no baselines; PCA and Isolation Forest are included.
-6. Results came from one split; they are now averaged over five.
-7. There were no tests or CI; there are now 22 tests and a GitHub Actions workflow.
-
-The original script is preserved in [`legacy/`](legacy/).
-
 ## Limitations
 
 - Five seeds and about 98 test frauds per split: differences smaller than roughly 0.1 PR-AUC should not be
